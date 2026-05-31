@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyector INA</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: #0d0d0d;
+    color: #f0f0f0;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ══ MODO PROYECCIÓN ══ */
+  #modo-proyeccion {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 40px;
+  }
+
+  #proy-libro {
+    font-size: clamp(18px, 3vw, 32px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #888;
+    font-family: sans-serif;
+    font-weight: 300;
+  }
+
+  #proy-numero {
+    font-size: clamp(120px, 22vw, 280px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -4px;
+    text-shadow: 0 0 60px rgba(255,255,255,0.15);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  #proy-numero.animating {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  #proy-vacio {
+    font-size: clamp(24px, 4vw, 48px);
+    color: #333;
+    font-style: italic;
+    font-family: sans-serif;
+  }
+
+  #proy-pie {
+    position: fixed;
+    bottom: 20px;
+    right: 24px;
+    font-size: 11px;
+    color: #222;
+    font-family: sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  /* ══ MODO CONTROL ══ */
+  #modo-control {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    background: #111;
+  }
+
+  .ctrl-header {
+    background: #1a1a2e;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #2a2a4a;
+  }
+
+  .ctrl-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #a0a8d0;
+    font-family: sans-serif;
+    letter-spacing: 1px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #444;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .dot.online { background: #4caf50; box-shadow: 0 0 6px #4caf50; }
+  .dot.error  { background: #f44336; box-shadow: 0 0 6px #f44336; }
+
+  .ctrl-body {
+    flex: 1;
+    padding: 24px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .campo-label {
+    font-size: 11px;
+    font-family: sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  #ctrl-numero {
+    width: 100%;
+    font-size: 48px;
+    font-weight: 700;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 12px;
+    color: #fff;
+    padding: 16px 20px;
+    text-align: center;
+    outline: none;
+    letter-spacing: 4px;
+    -moz-appearance: textfield;
+  }
+  #ctrl-numero::-webkit-outer-spin-button,
+  #ctrl-numero::-webkit-inner-spin-button { -webkit-appearance: none; }
+  #ctrl-numero:focus { border-color: #4a6fa5; }
+
+  .libros-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .libro-btn {
+    padding: 12px 10px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 10px;
+    color: #aaa;
+    font-size: 13px;
+    font-family: sans-serif;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    line-height: 1.3;
+  }
+  .libro-btn.selected {
+    border-color: #4a6fa5;
+    background: #1a2a45;
+    color: #fff;
+  }
+
+  #btn-proyectar {
+    width: 100%;
+    padding: 18px;
+    background: #4a6fa5;
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    font-size: 18px;
+    font-family: sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  #btn-proyectar:active { transform: scale(0.97); background: #3a5a90; }
+  #btn-proyectar:disabled { background: #2a2a2a; color: #555; cursor: default; }
+
+  #btn-limpiar {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #555;
+    font-size: 14px;
+    font-family: sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #btn-limpiar:active { background: #1a1a1a; color: #888; }
+
+  .historial { border-top: 1px solid #222; padding-top: 16px; }
+
+  .historial-title {
+    font-size: 11px;
+    font-family: sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 10px;
+  }
+
+  .hist-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #161616;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid #1e1e1e;
+  }
+  .hist-item:active { background: #1e2a3a; }
+  .hist-num { font-size: 22px; font-weight: 700; color: #ddd; }
+  .hist-libro { font-size: 12px; font-family: sans-serif; color: #555; }
+  .hist-replay { font-size: 18px; color: #444; }
+
+  /* ══ MODO SELECTOR ══ */
+  #modo-selector {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 40px;
+  }
+
+  .sel-logo { font-size: 14px; font-family: sans-serif; letter-spacing: 4px; text-transform: uppercase; color: #555; }
+  .sel-title { font-size: 28px; font-weight: 700; color: #ddd; font-family: sans-serif; text-align: center; }
+  .sel-btns { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 320px; }
+
+  .sel-btn {
+    padding: 22px;
+    border: 2px solid #333;
+    border-radius: 14px;
+    background: #161616;
+    color: #ccc;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .sel-btn:hover { border-color: #4a6fa5; color: #fff; background: #1a2a45; }
+  .sel-btn .sel-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+  .sel-btn .sel-sub { font-size: 12px; color: #555; font-weight: 400; margin-top: 4px; display: block; }
+
+  /* ══ SETUP ══ */
+  #modo-setup {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 30px;
+    text-align: center;
+  }
+  #modo-setup h2 { font-size: 22px; font-family: sans-serif; color: #ddd; }
+  #modo-setup p { font-size: 14px; font-family: sans-serif; color: #777; max-width: 360px; line-height: 1.6; }
+  #setup-url {
+    width: 100%;
+    max-width: 400px;
+    padding: 14px 16px;
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-family: monospace;
+    outline: none;
+  }
+  #setup-url:focus { border-color: #4a6fa5; }
+  #btn-setup-ok {
+    padding: 14px 40px;
+    background: #4a6fa5;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-family: sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<!-- SELECTOR -->
+<div id="modo-selector">
+  <div class="sel-logo">Proyector INA</div>
+  <div class="sel-title">¿Qué deseas abrir?</div>
+  <div class="sel-btns">
+    <button class="sel-btn" onclick="setModo('proyeccion')">
+      <span class="sel-icon">📺</span>
+      Pantalla de Proyección
+      <span class="sel-sub">Abrir en la tablet o pantalla grande</span>
+    </button>
+    <button class="sel-btn" onclick="setModo('control')">
+      <span class="sel-icon">🎛️</span>
+      Panel de Dirección
+      <span class="sel-sub">Controlar desde el teléfono</span>
+    </button>
+  </div>
+</div>
+
+<!-- PROYECCIÓN -->
+<div id="modo-proyeccion">
+  <div id="proy-libro"></div>
+  <div id="proy-numero" style="display:none"></div>
+  <div id="proy-vacio">Esperando himno...</div>
+  <div id="proy-pie">PROYECTOR INA</div>
+</div>
+
+<!-- CONTROL -->
+<div id="modo-control">
+  <div class="ctrl-header">
+    <div class="dot" id="status-dot"></div>
+    <h1>PANEL DE DIRECCIÓN</h1>
+  </div>
+  <div class="ctrl-body">
+    <div>
+      <div class="campo-label">Número de himno</div>
+      <input type="number" id="ctrl-numero" placeholder="501" min="1" max="999" inputmode="numeric">
+    </div>
+    <div>
+      <div class="campo-label">Himnario</div>
+      <div class="libros-grid" id="libros-grid"></div>
+    </div>
+    <button id="btn-proyectar" onclick="proyectar()">Proyectar</button>
+    <button id="btn-limpiar" onclick="limpiarPantalla()">Limpiar pantalla</button>
+    <div class="historial">
+      <div class="historial-title">Historial</div>
+      <div id="historial-lista"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP (primera vez) -->
+<div id="modo-setup">
+  <h2>Configuración inicial</h2>
+  <p>Pega la URL de tu Firebase Realtime Database.<br>Ejemplo: <code style="color:#4a6fa5">https://mi-proyecto-default-rtdb.firebaseio.com</code></p>
+  <input type="text" id="setup-url" placeholder="https://tu-proyecto-default-rtdb.firebaseio.com">
+  <button id="btn-setup-ok" onclick="guardarConfig()">Guardar y continuar</button>
+</div>
+
+<script>
+// ── Configuración ────────────────────────────
+const LIBROS = [
+  { id: 'adventista',  label: 'Himnario\nAdventista' },
+  { id: 'esperanza',   label: 'Himnario\nEsperanza' },
+  { id: 'cantemos',    label: 'Cantemos al\nSeñor' },
+  { id: 'otro',        label: 'Otro' },
+];
+
+let libroSeleccionado = LIBROS[0].id;
+let historial = JSON.parse(localStorage.getItem('ina_historial') || '[]');
+let dbUrl = localStorage.getItem('ina_db_url') || '';
+let pollInterval = null;
+let ultimoTs = 0;
+
+// ── DB helpers (Firebase REST) ───────────────
+async function dbGet() {
+  try {
+    const r = await fetch(`${dbUrl}/himno.json`);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+async function dbSet(data) {
+  try {
+    data.ts = Date.now();
+    const r = await fetch(`${dbUrl}/himno.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+// ── Modo ──────────────────────────────────────
+function setModo(modo) {
+  localStorage.setItem('ina_modo', modo);
+  arrancar(modo);
+}
+
+function arrancar(modo) {
+  ['selector','proyeccion','control','setup'].forEach(m =>
+    document.getElementById('modo-' + m).style.display = 'none'
+  );
+
+  if (modo === 'proyeccion') {
+    document.getElementById('modo-proyeccion').style.display = 'flex';
+    iniciarPolling();
+  } else if (modo === 'control') {
+    document.getElementById('modo-control').style.display = 'flex';
+    renderLibros();
+    renderHistorial();
+    verificarConexion();
+  } else if (modo === 'setup') {
+    document.getElementById('modo-setup').style.display = 'flex';
+    document.getElementById('setup-url').value = dbUrl;
+  } else {
+    document.getElementById('modo-selector').style.display = 'flex';
+  }
+}
+
+function guardarConfig() {
+  const val = document.getElementById('setup-url').value.trim().replace(/\/$/, '');
+  if (!val.startsWith('https://')) { alert('URL inválida'); return; }
+  dbUrl = val;
+  localStorage.setItem('ina_db_url', dbUrl);
+  arrancar('selector');
+}
+
+// ── Proyección (polling) ─────────────────────
+function iniciarPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(actualizarPantalla, 1500);
+  actualizarPantalla();
+}
+
+async function actualizarPantalla() {
+  const data = await dbGet();
+  if (!data) return;
+  if (data.ts === ultimoTs) return;
+  ultimoTs = data.ts;
+
+  const elNum  = document.getElementById('proy-numero');
+  const elLibro= document.getElementById('proy-libro');
+  const elVacio= document.getElementById('proy-vacio');
+
+  if (!data.numero) {
+    elNum.style.display = 'none';
+    elLibro.textContent = '';
+    elVacio.style.display = '';
+    return;
+  }
+
+  elVacio.style.display = 'none';
+  elNum.style.display = '';
+  elNum.classList.add('animating');
+  setTimeout(() => {
+    elNum.textContent = data.numero;
+    const libro = LIBROS.find(l => l.id === data.libro);
+    elLibro.textContent = libro ? libro.label.replace('\n', ' ') : (data.libro || '');
+    elNum.classList.remove('animating');
+  }, 200);
+}
+
+// ── Control ──────────────────────────────────
+function renderLibros() {
+  const grid = document.getElementById('libros-grid');
+  grid.innerHTML = '';
+  LIBROS.forEach(l => {
+    const btn = document.createElement('button');
+    btn.className = 'libro-btn' + (l.id === libroSeleccionado ? ' selected' : '');
+    btn.innerHTML = l.label.replace('\n', '<br>');
+    btn.onclick = () => { libroSeleccionado = l.id; renderLibros(); };
+    grid.appendChild(btn);
+  });
+}
+
+async function proyectar() {
+  const num = document.getElementById('ctrl-numero').value.trim();
+  if (!num) return;
+  const btn = document.getElementById('btn-proyectar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const ok = await dbSet({ numero: num, libro: libroSeleccionado });
+
+  if (ok) {
+    agregarHistorial({ numero: num, libro: libroSeleccionado });
+    btn.textContent = '✓ Proyectado';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Proyectar'; }, 1500);
+  } else {
+    btn.textContent = 'Error — reintentar';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Proyectar'; }, 2000);
+  }
+}
+
+async function limpiarPantalla() {
+  await dbSet({ numero: '', libro: '' });
+}
+
+async function verificarConexion() {
+  const dot = document.getElementById('status-dot');
+  const data = await dbGet();
+  if (data !== null) dot.className = 'dot online';
+  else dot.className = 'dot error';
+  setTimeout(verificarConexion, 6000);
+}
+
+function agregarHistorial(data) {
+  historial = historial.filter(h => !(h.numero === data.numero && h.libro === data.libro));
+  historial.unshift(data);
+  if (historial.length > 12) historial = historial.slice(0, 12);
+  localStorage.setItem('ina_historial', JSON.stringify(historial));
+  renderHistorial();
+}
+
+function renderHistorial() {
+  const lista = document.getElementById('historial-lista');
+  lista.innerHTML = '';
+  historial.forEach(h => {
+    const libro = LIBROS.find(l => l.id === h.libro);
+    const item = document.createElement('div');
+    item.className = 'hist-item';
+    item.innerHTML = `
+      <div>
+        <div class="hist-num">${h.numero}</div>
+        <div class="hist-libro">${libro ? libro.label.replace('\n',' ') : h.libro}</div>
+      </div>
+      <div class="hist-replay">▶</div>`;
+    item.onclick = () => {
+      document.getElementById('ctrl-numero').value = h.numero;
+      libroSeleccionado = h.libro;
+      renderLibros();
+    };
+    lista.appendChild(item);
+  });
+}
+
+// ── Init ─────────────────────────────────────
+const params = new URLSearchParams(location.search);
+if (params.has('control')) {
+  if (!dbUrl) arrancar('setup'); else arrancar('control');
+} else if (params.has('pantalla')) {
+  arrancar('proyeccion');
+} else if (params.has('setup')) {
+  arrancar('setup');
+} else {
+  const guardado = localStorage.getItem('ina_modo');
+  if (guardado && dbUrl) arrancar(guardado);
+  else if (!dbUrl) arrancar('setup');
+  else arrancar('selector');
+}
+</script>
+</body>
+</html>
