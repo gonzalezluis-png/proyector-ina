@@ -17,234 +17,22 @@
     flex-direction: column;
   }
 
-  /* ══ MODO PROYECCIÓN ══ */
-  #modo-proyeccion {
-    display: none;
-    flex: 1;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    padding: 40px;
-  }
-
-  #proy-libro {
-    font-size: clamp(18px, 3vw, 32px);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: #888;
-    font-family: sans-serif;
-    font-weight: 300;
-  }
-
-  #proy-numero {
-    font-size: clamp(120px, 22vw, 280px);
-    font-weight: 700;
-    color: #fff;
-    line-height: 1;
-    letter-spacing: -4px;
-    text-shadow: 0 0 60px rgba(255,255,255,0.15);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
-
-  #proy-numero.animating {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-
-  #proy-vacio {
-    font-size: clamp(24px, 4vw, 48px);
-    color: #333;
-    font-style: italic;
-    font-family: sans-serif;
-  }
-
-  #proy-pie {
-    position: fixed;
-    bottom: 20px;
-    right: 24px;
-    font-size: 11px;
-    color: #222;
-    font-family: sans-serif;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    user-select: none;
-  }
-
-  /* ══ MODO CONTROL ══ */
-  #modo-control {
-    display: none;
-    flex: 1;
-    flex-direction: column;
-    background: #111;
-  }
-
-  .ctrl-header {
-    background: #1a1a2e;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-bottom: 1px solid #2a2a4a;
-  }
-
-  .ctrl-header h1 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #a0a8d0;
-    font-family: sans-serif;
-    letter-spacing: 1px;
-  }
-
-  .dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #444;
-    transition: background 0.3s;
-    flex-shrink: 0;
-  }
-  .dot.online { background: #4caf50; box-shadow: 0 0 6px #4caf50; }
-  .dot.error  { background: #f44336; box-shadow: 0 0 6px #f44336; }
-
-  .ctrl-body {
-    flex: 1;
-    padding: 24px 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .campo-label {
-    font-size: 11px;
-    font-family: sans-serif;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #666;
-    margin-bottom: 8px;
-  }
-
-  #ctrl-numero {
-    width: 100%;
-    font-size: 48px;
-    font-weight: 700;
-    background: #1a1a1a;
-    border: 2px solid #333;
-    border-radius: 12px;
-    color: #fff;
-    padding: 16px 20px;
-    text-align: center;
-    outline: none;
-    letter-spacing: 4px;
-    -moz-appearance: textfield;
-  }
-  #ctrl-numero::-webkit-outer-spin-button,
-  #ctrl-numero::-webkit-inner-spin-button { -webkit-appearance: none; }
-  #ctrl-numero:focus { border-color: #4a6fa5; }
-
-  .libros-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .libro-btn {
-    padding: 12px 10px;
-    background: #1a1a1a;
-    border: 2px solid #333;
-    border-radius: 10px;
-    color: #aaa;
-    font-size: 13px;
-    font-family: sans-serif;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-    line-height: 1.3;
-  }
-  .libro-btn.selected {
-    border-color: #4a6fa5;
-    background: #1a2a45;
-    color: #fff;
-  }
-
-  #btn-proyectar {
-    width: 100%;
-    padding: 18px;
-    background: #4a6fa5;
-    border: none;
-    border-radius: 14px;
-    color: #fff;
-    font-size: 18px;
-    font-family: sans-serif;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-  }
-  #btn-proyectar:active { transform: scale(0.97); background: #3a5a90; }
-  #btn-proyectar:disabled { background: #2a2a2a; color: #555; cursor: default; }
-
-  #btn-limpiar {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid #333;
-    border-radius: 10px;
-    color: #555;
-    font-size: 14px;
-    font-family: sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  #btn-limpiar:active { background: #1a1a1a; color: #888; }
-
-  .historial { border-top: 1px solid #222; padding-top: 16px; }
-
-  .historial-title {
-    font-size: 11px;
-    font-family: sans-serif;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #444;
-    margin-bottom: 10px;
-  }
-
-  .hist-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: #161616;
-    margin-bottom: 6px;
-    cursor: pointer;
-    transition: background 0.15s;
-    border: 1px solid #1e1e1e;
-  }
-  .hist-item:active { background: #1e2a3a; }
-  .hist-num { font-size: 22px; font-weight: 700; color: #ddd; }
-  .hist-libro { font-size: 12px; font-family: sans-serif; color: #555; }
-  .hist-replay { font-size: 18px; color: #444; }
-
-  /* ══ MODO SELECTOR ══ */
+  /* ══ SELECTOR ══ */
   #modo-selector {
     display: none;
     flex: 1;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 30px;
+    gap: 28px;
     padding: 40px;
   }
-
-  .sel-logo { font-size: 14px; font-family: sans-serif; letter-spacing: 4px; text-transform: uppercase; color: #555; }
-  .sel-title { font-size: 28px; font-weight: 700; color: #ddd; font-family: sans-serif; text-align: center; }
+  .sel-logo { font-size: 13px; font-family: sans-serif; letter-spacing: 4px; text-transform: uppercase; color: #555; }
+  .sel-title { font-size: 26px; font-weight: 700; color: #ddd; font-family: sans-serif; text-align: center; }
   .sel-btns { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 320px; }
-
   .sel-btn {
     padding: 22px;
-    border: 2px solid #333;
+    border: 2px solid #2a2a2a;
     border-radius: 14px;
     background: #161616;
     color: #ccc;
@@ -256,45 +44,219 @@
     transition: all 0.2s;
   }
   .sel-btn:hover { border-color: #4a6fa5; color: #fff; background: #1a2a45; }
-  .sel-btn .sel-icon { font-size: 28px; display: block; margin-bottom: 6px; }
-  .sel-btn .sel-sub { font-size: 12px; color: #555; font-weight: 400; margin-top: 4px; display: block; }
+  .sel-icon { font-size: 26px; display: block; margin-bottom: 6px; }
+  .sel-sub { font-size: 12px; color: #555; font-weight: 400; margin-top: 4px; display: block; }
 
-  /* ══ SETUP ══ */
-  #modo-setup {
+  /* ══ PROYECCIÓN ══ */
+  #modo-proyeccion {
     display: none;
     flex: 1;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 20px;
-    padding: 30px;
-    text-align: center;
+    padding: 40px;
+    position: relative;
   }
-  #modo-setup h2 { font-size: 22px; font-family: sans-serif; color: #ddd; }
-  #modo-setup p { font-size: 14px; font-family: sans-serif; color: #777; max-width: 360px; line-height: 1.6; }
-  #setup-url {
-    width: 100%;
-    max-width: 400px;
-    padding: 14px 16px;
-    background: #1a1a1a;
-    border: 2px solid #333;
-    border-radius: 10px;
+  #proy-libro {
+    font-size: clamp(16px, 2.5vw, 28px);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #777;
+    font-family: sans-serif;
+    font-weight: 300;
+    min-height: 1.4em;
+  }
+  #proy-numero {
+    font-size: clamp(120px, 22vw, 280px);
+    font-weight: 700;
     color: #fff;
-    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -4px;
+    text-shadow: 0 0 80px rgba(255,255,255,0.12);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  #proy-numero.out { opacity: 0; transform: scale(0.9); }
+  #proy-vacio {
+    font-size: clamp(20px, 3.5vw, 42px);
+    color: #2a2a2a;
+    font-style: italic;
+    font-family: sans-serif;
+  }
+  #proy-estado {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-family: sans-serif;
+    color: #333;
+  }
+  #proy-pie {
+    position: fixed;
+    bottom: 16px;
+    right: 20px;
+    font-size: 11px;
+    color: #1e1e1e;
+    font-family: sans-serif;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  #proy-sala {
+    position: fixed;
+    bottom: 16px;
+    left: 20px;
+    font-size: 13px;
     font-family: monospace;
+    color: #2a2a2a;
+  }
+
+  /* ══ CONTROL ══ */
+  #modo-control {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    background: #111;
+  }
+  .ctrl-header {
+    background: #14142a;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #222244;
+  }
+  .ctrl-header h1 { font-size: 15px; font-weight: 600; color: #9090c0; font-family: sans-serif; letter-spacing: 1px; flex: 1; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #333; flex-shrink: 0;
+    transition: background 0.3s;
+  }
+  .dot.online  { background: #4caf50; box-shadow: 0 0 6px #4caf50; }
+  .dot.error   { background: #f44336; box-shadow: 0 0 6px #f44336; }
+  .dot.waiting { background: #ff9800; box-shadow: 0 0 6px #ff9800; }
+
+  .ctrl-body { flex: 1; padding: 20px 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+
+  .campo-label { font-size: 10px; font-family: sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #555; margin-bottom: 7px; }
+
+  #ctrl-numero {
+    width: 100%;
+    font-size: 52px;
+    font-weight: 700;
+    background: #181818;
+    border: 2px solid #2a2a2a;
+    border-radius: 12px;
+    color: #fff;
+    padding: 14px 18px;
+    text-align: center;
+    outline: none;
+    letter-spacing: 4px;
+    -moz-appearance: textfield;
+  }
+  #ctrl-numero::-webkit-outer-spin-button,
+  #ctrl-numero::-webkit-inner-spin-button { -webkit-appearance: none; }
+  #ctrl-numero:focus { border-color: #4a6fa5; }
+
+  .libros-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .libro-btn {
+    padding: 11px 8px;
+    background: #181818;
+    border: 2px solid #2a2a2a;
+    border-radius: 10px;
+    color: #888;
+    font-size: 12px;
+    font-family: sans-serif;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    line-height: 1.3;
+  }
+  .libro-btn.selected { border-color: #4a6fa5; background: #18283f; color: #fff; }
+
+  #btn-proyectar {
+    width: 100%;
+    padding: 17px;
+    background: #4a6fa5;
+    border: none;
+    border-radius: 13px;
+    color: #fff;
+    font-size: 17px;
+    font-family: sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  #btn-proyectar:active { transform: scale(0.97); background: #3a5a90; }
+  #btn-proyectar:disabled { background: #222; color: #444; cursor: default; }
+
+  #btn-limpiar {
+    width: 100%;
+    padding: 11px;
+    background: transparent;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #444;
+    font-size: 13px;
+    font-family: sans-serif;
+    cursor: pointer;
+  }
+
+  .historial { border-top: 1px solid #1e1e1e; padding-top: 14px; }
+  .historial-title { font-size: 10px; font-family: sans-serif; letter-spacing: 2px; text-transform: uppercase; color: #333; margin-bottom: 9px; }
+  .hist-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 11px; border-radius: 8px; background: #141414;
+    margin-bottom: 5px; cursor: pointer; border: 1px solid #1a1a1a;
+    transition: background 0.15s;
+  }
+  .hist-item:active { background: #1a2840; }
+  .hist-num { font-size: 20px; font-weight: 700; color: #ccc; }
+  .hist-libro { font-size: 11px; font-family: sans-serif; color: #444; }
+  .hist-replay { font-size: 16px; color: #333; }
+
+  /* ══ SALA ══ */
+  #modo-sala {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 36px;
+  }
+  #modo-sala h2 { font-size: 20px; font-family: sans-serif; color: #bbb; }
+  #modo-sala p { font-size: 13px; font-family: sans-serif; color: #555; text-align: center; max-width: 300px; line-height: 1.6; }
+  #sala-input {
+    width: 100%;
+    max-width: 300px;
+    padding: 14px 18px;
+    background: #181818;
+    border: 2px solid #2a2a2a;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 22px;
+    font-family: monospace;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 4px;
     outline: none;
   }
-  #setup-url:focus { border-color: #4a6fa5; }
-  #btn-setup-ok {
+  #sala-input:focus { border-color: #4a6fa5; }
+  #btn-sala-ok {
     padding: 14px 40px;
     background: #4a6fa5;
     border: none;
-    border-radius: 10px;
+    border-radius: 11px;
     color: #fff;
-    font-size: 16px;
+    font-size: 15px;
     font-family: sans-serif;
     font-weight: 700;
     cursor: pointer;
+    letter-spacing: 1px;
   }
 </style>
 </head>
@@ -305,12 +267,12 @@
   <div class="sel-logo">Proyector INA</div>
   <div class="sel-title">¿Qué deseas abrir?</div>
   <div class="sel-btns">
-    <button class="sel-btn" onclick="setModo('proyeccion')">
+    <button class="sel-btn" onclick="irA('proyeccion')">
       <span class="sel-icon">📺</span>
       Pantalla de Proyección
       <span class="sel-sub">Abrir en la tablet o pantalla grande</span>
     </button>
-    <button class="sel-btn" onclick="setModo('control')">
+    <button class="sel-btn" onclick="irA('sala')">
       <span class="sel-icon">🎛️</span>
       Panel de Dirección
       <span class="sel-sub">Controlar desde el teléfono</span>
@@ -320,17 +282,30 @@
 
 <!-- PROYECCIÓN -->
 <div id="modo-proyeccion">
+  <div id="proy-estado">
+    <div class="dot" id="proy-dot"></div>
+    <span id="proy-dot-label">Esperando control...</span>
+  </div>
   <div id="proy-libro"></div>
   <div id="proy-numero" style="display:none"></div>
   <div id="proy-vacio">Esperando himno...</div>
+  <div id="proy-sala"></div>
   <div id="proy-pie">PROYECTOR INA</div>
+</div>
+
+<!-- SALA (ingresar código) -->
+<div id="modo-sala">
+  <h2>Código de sala</h2>
+  <p>Escribe el mismo código que aparece en la pantalla de proyección</p>
+  <input type="text" id="sala-input" maxlength="12" placeholder="INA-2024" oninput="this.value=this.value.toUpperCase()">
+  <button id="btn-sala-ok" onclick="conectarControl()">Conectar</button>
 </div>
 
 <!-- CONTROL -->
 <div id="modo-control">
   <div class="ctrl-header">
-    <div class="dot" id="status-dot"></div>
-    <h1>PANEL DE DIRECCIÓN</h1>
+    <div class="dot online" id="ctrl-dot"></div>
+    <h1 id="ctrl-titulo">PANEL DE DIRECCIÓN</h1>
   </div>
   <div class="ctrl-body">
     <div>
@@ -350,101 +325,87 @@
   </div>
 </div>
 
-<!-- SETUP (primera vez) -->
-<div id="modo-setup">
-  <h2>Configuración inicial</h2>
-  <p>Pega la URL de tu Firebase Realtime Database.<br>Ejemplo: <code style="color:#4a6fa5">https://mi-proyecto-default-rtdb.firebaseio.com</code></p>
-  <input type="text" id="setup-url" placeholder="https://tu-proyecto-default-rtdb.firebaseio.com">
-  <button id="btn-setup-ok" onclick="guardarConfig()">Guardar y continuar</button>
-</div>
-
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
-// ── Configuración ────────────────────────────
 const LIBROS = [
-  { id: 'adventista',  label: 'Himnario\nAdventista' },
-  { id: 'esperanza',   label: 'Himnario\nEsperanza' },
-  { id: 'cantemos',    label: 'Cantemos al\nSeñor' },
-  { id: 'otro',        label: 'Otro' },
+  { id: 'adventista', label: 'Himnario\nAdventista' },
+  { id: 'esperanza',  label: 'Himnario\nEsperanza'  },
+  { id: 'cantemos',   label: 'Cantemos al\nSeñor'   },
+  { id: 'otro',       label: 'Otro'                  },
 ];
 
 let libroSeleccionado = LIBROS[0].id;
 let historial = JSON.parse(localStorage.getItem('ina_historial') || '[]');
-let dbUrl = localStorage.getItem('ina_db_url') || '';
-let pollInterval = null;
-let ultimoTs = 0;
+let peer = null;
+let conexion = null;   // conn en pantalla (entrante) o en control (saliente)
 
-// ── DB helpers (Firebase REST) ───────────────
-async function dbGet() {
-  try {
-    const r = await fetch(`${dbUrl}/himno.json`);
-    if (!r.ok) return null;
-    return await r.json();
-  } catch { return null; }
-}
-
-async function dbSet(data) {
-  try {
-    data.ts = Date.now();
-    const r = await fetch(`${dbUrl}/himno.json`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return r.ok;
-  } catch { return false; }
-}
-
-// ── Modo ──────────────────────────────────────
-function setModo(modo) {
-  localStorage.setItem('ina_modo', modo);
-  arrancar(modo);
-}
-
-function arrancar(modo) {
-  ['selector','proyeccion','control','setup'].forEach(m =>
+// ── Navegación ────────────────────────────────
+function mostrar(id) {
+  ['selector','proyeccion','sala','control'].forEach(m =>
     document.getElementById('modo-' + m).style.display = 'none'
   );
+  document.getElementById('modo-' + id).style.display = 'flex';
+}
 
-  if (modo === 'proyeccion') {
-    document.getElementById('modo-proyeccion').style.display = 'flex';
-    iniciarPolling();
-  } else if (modo === 'control') {
-    document.getElementById('modo-control').style.display = 'flex';
-    renderLibros();
-    renderHistorial();
-    verificarConexion();
-  } else if (modo === 'setup') {
-    document.getElementById('modo-setup').style.display = 'flex';
-    document.getElementById('setup-url').value = dbUrl;
-  } else {
-    document.getElementById('modo-selector').style.display = 'flex';
+function irA(modo) {
+  localStorage.setItem('ina_modo', modo);
+  if (modo === 'proyeccion') iniciarPantalla();
+  else mostrar(modo);
+}
+
+// ── PANTALLA ──────────────────────────────────
+function iniciarPantalla() {
+  mostrar('proyeccion');
+  const sala = generarSala();
+  const peerId = 'ina-sala-' + sala;
+
+  document.getElementById('proy-sala').textContent = 'Sala: ' + sala;
+
+  if (peer) peer.destroy();
+  peer = new Peer(peerId);
+
+  peer.on('open', () => {
+    setDotProy('waiting', 'Sala ' + sala + ' — esperando control...');
+  });
+
+  peer.on('connection', conn => {
+    conexion = conn;
+    conn.on('open', () => setDotProy('online', 'Control conectado'));
+    conn.on('data', data => mostrarHimno(data));
+    conn.on('close', () => setDotProy('waiting', 'Control desconectado'));
+  });
+
+  peer.on('error', e => {
+    if (e.type === 'unavailable-id') {
+      // sala ya ocupada, reintentar con nueva
+      localStorage.removeItem('ina_sala');
+      iniciarPantalla();
+    } else {
+      setDotProy('error', 'Error de conexión');
+    }
+  });
+}
+
+function generarSala() {
+  let sala = localStorage.getItem('ina_sala');
+  if (!sala) {
+    const letras = 'ABCDEFGHJKLMNPQRSTUVWXY';
+    sala = 'INA-' + Array.from({length: 4}, () => letras[Math.floor(Math.random()*letras.length)]).join('');
+    localStorage.setItem('ina_sala', sala);
   }
+  return sala;
 }
 
-function guardarConfig() {
-  const val = document.getElementById('setup-url').value.trim().replace(/\/$/, '');
-  if (!val.startsWith('https://')) { alert('URL inválida'); return; }
-  dbUrl = val;
-  localStorage.setItem('ina_db_url', dbUrl);
-  arrancar('selector');
+function setDotProy(estado, label) {
+  const dot = document.getElementById('proy-dot');
+  dot.className = 'dot ' + estado;
+  document.getElementById('proy-dot-label').textContent = label;
 }
 
-// ── Proyección (polling) ─────────────────────
-function iniciarPolling() {
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(actualizarPantalla, 1500);
-  actualizarPantalla();
-}
-
-async function actualizarPantalla() {
-  const data = await dbGet();
-  if (!data) return;
-  if (data.ts === ultimoTs) return;
-  ultimoTs = data.ts;
-
-  const elNum  = document.getElementById('proy-numero');
-  const elLibro= document.getElementById('proy-libro');
-  const elVacio= document.getElementById('proy-vacio');
+function mostrarHimno(data) {
+  const elNum   = document.getElementById('proy-numero');
+  const elLibro = document.getElementById('proy-libro');
+  const elVacio = document.getElementById('proy-vacio');
 
   if (!data.numero) {
     elNum.style.display = 'none';
@@ -454,17 +415,76 @@ async function actualizarPantalla() {
   }
 
   elVacio.style.display = 'none';
-  elNum.style.display = '';
-  elNum.classList.add('animating');
+  elNum.classList.add('out');
   setTimeout(() => {
     elNum.textContent = data.numero;
     const libro = LIBROS.find(l => l.id === data.libro);
     elLibro.textContent = libro ? libro.label.replace('\n', ' ') : (data.libro || '');
-    elNum.classList.remove('animating');
-  }, 200);
+    elNum.style.display = '';
+    elNum.classList.remove('out');
+  }, 250);
 }
 
-// ── Control ──────────────────────────────────
+// ── CONTROL ──────────────────────────────────
+function conectarControl() {
+  const sala = document.getElementById('sala-input').value.trim().toUpperCase();
+  if (!sala) return;
+  const peerId = 'ina-sala-' + sala;
+
+  mostrar('control');
+  renderLibros();
+  renderHistorial();
+
+  if (peer) peer.destroy();
+  peer = new Peer();
+
+  peer.on('open', () => {
+    conexion = peer.connect(peerId, { reliable: true });
+    conexion.on('open', () => {
+      setDotCtrl('online');
+      document.getElementById('ctrl-titulo').textContent = 'SALA ' + sala;
+    });
+    conexion.on('close', () => setDotCtrl('error'));
+    conexion.on('error', () => setDotCtrl('error'));
+  });
+
+  peer.on('error', () => setDotCtrl('error'));
+
+  localStorage.setItem('ina_ctrl_sala', sala);
+}
+
+function setDotCtrl(estado) {
+  document.getElementById('ctrl-dot').className = 'dot ' + estado;
+}
+
+function enviar(data) {
+  if (!conexion || !conexion.open) { setDotCtrl('error'); return false; }
+  conexion.send(data);
+  return true;
+}
+
+function proyectar() {
+  const num = document.getElementById('ctrl-numero').value.trim();
+  if (!num) return;
+  const btn = document.getElementById('btn-proyectar');
+  const data = { numero: num, libro: libroSeleccionado };
+  const ok = enviar(data);
+
+  if (ok) {
+    agregarHistorial(data);
+    btn.textContent = '✓ Proyectado';
+    btn.disabled = true;
+    setTimeout(() => { btn.textContent = 'Proyectar'; btn.disabled = false; }, 1200);
+  } else {
+    btn.textContent = 'Sin conexión';
+    setTimeout(() => { btn.textContent = 'Proyectar'; }, 2000);
+  }
+}
+
+function limpiarPantalla() {
+  enviar({ numero: '', libro: '' });
+}
+
 function renderLibros() {
   const grid = document.getElementById('libros-grid');
   grid.innerHTML = '';
@@ -475,37 +495,6 @@ function renderLibros() {
     btn.onclick = () => { libroSeleccionado = l.id; renderLibros(); };
     grid.appendChild(btn);
   });
-}
-
-async function proyectar() {
-  const num = document.getElementById('ctrl-numero').value.trim();
-  if (!num) return;
-  const btn = document.getElementById('btn-proyectar');
-  btn.disabled = true;
-  btn.textContent = 'Enviando...';
-
-  const ok = await dbSet({ numero: num, libro: libroSeleccionado });
-
-  if (ok) {
-    agregarHistorial({ numero: num, libro: libroSeleccionado });
-    btn.textContent = '✓ Proyectado';
-    setTimeout(() => { btn.disabled = false; btn.textContent = 'Proyectar'; }, 1500);
-  } else {
-    btn.textContent = 'Error — reintentar';
-    setTimeout(() => { btn.disabled = false; btn.textContent = 'Proyectar'; }, 2000);
-  }
-}
-
-async function limpiarPantalla() {
-  await dbSet({ numero: '', libro: '' });
-}
-
-async function verificarConexion() {
-  const dot = document.getElementById('status-dot');
-  const data = await dbGet();
-  if (data !== null) dot.className = 'dot online';
-  else dot.className = 'dot error';
-  setTimeout(verificarConexion, 6000);
 }
 
 function agregarHistorial(data) {
@@ -538,19 +527,16 @@ function renderHistorial() {
   });
 }
 
-// ── Init ─────────────────────────────────────
+// ── Init ──────────────────────────────────────
 const params = new URLSearchParams(location.search);
-if (params.has('control')) {
-  if (!dbUrl) arrancar('setup'); else arrancar('control');
-} else if (params.has('pantalla')) {
-  arrancar('proyeccion');
-} else if (params.has('setup')) {
-  arrancar('setup');
+if (params.has('pantalla')) {
+  iniciarPantalla();
+} else if (params.has('control')) {
+  const sala = localStorage.getItem('ina_ctrl_sala') || '';
+  document.getElementById('sala-input').value = sala;
+  mostrar('sala');
 } else {
-  const guardado = localStorage.getItem('ina_modo');
-  if (guardado && dbUrl) arrancar(guardado);
-  else if (!dbUrl) arrancar('setup');
-  else arrancar('selector');
+  mostrar('selector');
 }
 </script>
 </body>
