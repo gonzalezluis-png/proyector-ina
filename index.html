@@ -104,14 +104,6 @@
     letter-spacing: 3px;
     text-transform: uppercase;
   }
-  #proy-sala {
-    position: fixed;
-    bottom: 16px;
-    left: 20px;
-    font-size: 13px;
-    font-family: monospace;
-    color: #2a2a2a;
-  }
 
   /* ══ CONTROL ══ */
   #modo-control {
@@ -219,46 +211,6 @@
   .hist-libro { font-size: 11px; font-family: sans-serif; color: #444; }
   .hist-replay { font-size: 16px; color: #333; }
 
-  /* ══ SALA ══ */
-  #modo-sala {
-    display: none;
-    flex: 1;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 22px;
-    padding: 36px;
-  }
-  #modo-sala h2 { font-size: 20px; font-family: sans-serif; color: #bbb; }
-  #modo-sala p { font-size: 13px; font-family: sans-serif; color: #555; text-align: center; max-width: 300px; line-height: 1.6; }
-  #sala-input {
-    width: 100%;
-    max-width: 300px;
-    padding: 14px 18px;
-    background: #181818;
-    border: 2px solid #2a2a2a;
-    border-radius: 12px;
-    color: #fff;
-    font-size: 22px;
-    font-family: monospace;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    outline: none;
-  }
-  #sala-input:focus { border-color: #4a6fa5; }
-  #btn-sala-ok {
-    padding: 14px 40px;
-    background: #4a6fa5;
-    border: none;
-    border-radius: 11px;
-    color: #fff;
-    font-size: 15px;
-    font-family: sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 1px;
-  }
 </style>
 </head>
 <body>
@@ -290,17 +242,9 @@
   <div id="proy-libro"></div>
   <div id="proy-numero" style="display:none"></div>
   <div id="proy-vacio">Esperando himno...</div>
-  <div id="proy-sala"></div>
   <div id="proy-pie">PROYECTOR INA</div>
 </div>
 
-<!-- SALA (ingresar código) -->
-<div id="modo-sala">
-  <h2>Código de sala</h2>
-  <p>Escribe el mismo código que aparece en la pantalla de proyección</p>
-  <input type="text" id="sala-input" maxlength="12" placeholder="INA-2024" oninput="this.value=this.value.toUpperCase()">
-  <button id="btn-sala-ok" onclick="conectarControl()">Conectar</button>
-</div>
 
 <!-- CONTROL -->
 <div id="modo-control">
@@ -328,6 +272,9 @@
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
+// ID fijo — pantalla y control siempre se encuentran aquí
+const PEER_PANTALLA = 'ina-proyector-iglesia-principal';
+
 const LIBROS = [
   { id: 'adventista', label: 'Himnario\nAdventista' },
   { id: 'esperanza',  label: 'Himnario\nEsperanza'  },
@@ -335,71 +282,58 @@ const LIBROS = [
   { id: 'otro',       label: 'Otro'                  },
 ];
 
+const ICE = { config: { iceServers: [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+]}};
+
 let libroSeleccionado = LIBROS[0].id;
 let historial = JSON.parse(localStorage.getItem('ina_historial') || '[]');
 let peer = null;
-let conexion = null;   // conn en pantalla (entrante) o en control (saliente)
+let conexion = null;
 
 // ── Navegación ────────────────────────────────
 function mostrar(id) {
-  ['selector','proyeccion','sala','control'].forEach(m =>
+  ['selector','proyeccion','control'].forEach(m =>
     document.getElementById('modo-' + m).style.display = 'none'
   );
   document.getElementById('modo-' + id).style.display = 'flex';
 }
 
 function irA(modo) {
-  localStorage.setItem('ina_modo', modo);
   if (modo === 'proyeccion') iniciarPantalla();
-  else mostrar(modo);
+  else iniciarControl();
 }
 
 // ── PANTALLA ──────────────────────────────────
 function iniciarPantalla() {
   mostrar('proyeccion');
-  const sala = generarSala();
-  const peerId = 'ina-sala-' + sala;
-
-  document.getElementById('proy-sala').textContent = 'Sala: ' + sala;
-
+  setDotProy('waiting', 'Conectando...');
   if (peer) peer.destroy();
-  peer = new Peer(peerId);
 
-  peer.on('open', () => {
-    setDotProy('waiting', 'Sala ' + sala + ' — esperando control...');
-  });
+  peer = new Peer(PEER_PANTALLA, ICE);
+
+  peer.on('open', () => setDotProy('waiting', 'Esperando control...'));
 
   peer.on('connection', conn => {
     conexion = conn;
-    conn.on('open', () => setDotProy('online', 'Control conectado'));
-    conn.on('data', data => mostrarHimno(data));
+    conn.on('open',  () => setDotProy('online', 'Control conectado'));
+    conn.on('data',  data => mostrarHimno(data));
     conn.on('close', () => setDotProy('waiting', 'Control desconectado'));
   });
 
   peer.on('error', e => {
     if (e.type === 'unavailable-id') {
-      // sala ya ocupada, reintentar con nueva
-      localStorage.removeItem('ina_sala');
-      iniciarPantalla();
+      // La pantalla ya estaba abierta en otro lado — conectar como esclavo
+      setDotProy('online', 'Pantalla activa en otro dispositivo');
     } else {
-      setDotProy('error', 'Error de conexión');
+      setDotProy('error', 'Error — recarga la página');
     }
   });
 }
 
-function generarSala() {
-  let sala = localStorage.getItem('ina_sala');
-  if (!sala) {
-    const letras = 'ABCDEFGHJKLMNPQRSTUVWXY';
-    sala = 'INA-' + Array.from({length: 4}, () => letras[Math.floor(Math.random()*letras.length)]).join('');
-    localStorage.setItem('ina_sala', sala);
-  }
-  return sala;
-}
-
 function setDotProy(estado, label) {
-  const dot = document.getElementById('proy-dot');
-  dot.className = 'dot ' + estado;
+  document.getElementById('proy-dot').className = 'dot ' + estado;
   document.getElementById('proy-dot-label').textContent = label;
 }
 
@@ -427,11 +361,7 @@ function mostrarHimno(data) {
 }
 
 // ── CONTROL ──────────────────────────────────
-function conectarControl() {
-  const sala = document.getElementById('sala-input').value.trim().toUpperCase();
-  if (!sala) return;
-  const peerId = 'ina-sala-' + sala;
-
+function iniciarControl() {
   mostrar('control');
   renderLibros();
   renderHistorial();
@@ -440,42 +370,29 @@ function conectarControl() {
   setDotCtrl('waiting');
 
   if (peer) peer.destroy();
-  peer = new Peer(undefined, {
-    config: {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-      ]
-    }
-  });
+  peer = new Peer(ICE);
 
   peer.on('open', () => {
-    conexion = peer.connect(peerId, { reliable: true });
+    conexion = peer.connect(PEER_PANTALLA, { reliable: true });
+
     conexion.on('open', () => {
       setDotCtrl('online');
-      document.getElementById('ctrl-titulo').textContent = 'SALA ' + sala;
       document.getElementById('btn-proyectar').disabled = false;
       document.getElementById('btn-proyectar').textContent = 'Proyectar';
     });
+
     conexion.on('close', () => {
       setDotCtrl('error');
       document.getElementById('btn-proyectar').disabled = true;
-      document.getElementById('btn-proyectar').textContent = 'Sin conexión';
-    });
-    conexion.on('error', () => {
-      setDotCtrl('error');
-      document.getElementById('btn-proyectar').disabled = true;
-      document.getElementById('btn-proyectar').textContent = 'Sin conexión';
+      document.getElementById('btn-proyectar').textContent = 'Pantalla desconectada';
     });
   });
 
-  peer.on('error', (e) => {
+  peer.on('error', () => {
     setDotCtrl('error');
     document.getElementById('btn-proyectar').disabled = true;
-    document.getElementById('btn-proyectar').textContent = 'Error — verifica el código';
+    document.getElementById('btn-proyectar').textContent = 'Pantalla no encontrada';
   });
-
-  localStorage.setItem('ina_ctrl_sala', sala);
 }
 
 function setDotCtrl(estado) {
@@ -483,7 +400,7 @@ function setDotCtrl(estado) {
 }
 
 function enviar(data) {
-  if (!conexion || !conexion.open) { setDotCtrl('error'); return false; }
+  if (!conexion || !conexion.open) return false;
   conexion.send(data);
   return true;
 }
@@ -493,9 +410,8 @@ function proyectar() {
   if (!num) return;
   const btn = document.getElementById('btn-proyectar');
   const data = { numero: num, libro: libroSeleccionado };
-  const ok = enviar(data);
 
-  if (ok) {
+  if (enviar(data)) {
     agregarHistorial(data);
     btn.textContent = '✓ Proyectado';
     btn.disabled = true;
@@ -506,9 +422,7 @@ function proyectar() {
   }
 }
 
-function limpiarPantalla() {
-  enviar({ numero: '', libro: '' });
-}
+function limpiarPantalla() { enviar({ numero: '', libro: '' }); }
 
 function renderLibros() {
   const grid = document.getElementById('libros-grid');
@@ -554,15 +468,9 @@ function renderHistorial() {
 
 // ── Init ──────────────────────────────────────
 const params = new URLSearchParams(location.search);
-if (params.has('pantalla')) {
-  iniciarPantalla();
-} else if (params.has('control')) {
-  const sala = localStorage.getItem('ina_ctrl_sala') || '';
-  document.getElementById('sala-input').value = sala;
-  mostrar('sala');
-} else {
-  mostrar('selector');
-}
+if (params.has('pantalla')) iniciarPantalla();
+else if (params.has('control')) iniciarControl();
+else mostrar('selector');
 </script>
 </body>
 </html>
