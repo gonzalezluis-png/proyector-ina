@@ -370,7 +370,7 @@ function iniciarControl() {
   setDotCtrl('waiting');
 
   if (peer) peer.destroy();
-  peer = new Peer(ICE);
+  peer = new Peer(undefined, ICE);
 
   peer.on('open', () => {
     conexion = peer.connect(PEER_PANTALLA, { reliable: true });
